@@ -98,15 +98,66 @@
             font-weight: 700;
         }
         
-        .welcome-message {
-            font-size: 20px;
-            color: var(--dark);
-            margin-bottom: 10px;
+        .user-selection {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
         
-        .last-update {
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .user-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .user-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .user-card.active {
+            border-color: var(--primary);
+            background: #f0f7ff;
+        }
+        
+        .user-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .user-phone {
             color: #64748b;
             font-size: 14px;
+            margin-bottom: 3px;
+        }
+        
+        .user-id {
+            color: #64748b;
+            font-size: 12px;
         }
         
         .nav-tabs {
@@ -156,16 +207,6 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .section-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--dark);
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         
         .form-grid {
@@ -294,45 +335,6 @@
             border: 1px solid #fecaca;
         }
         
-        .user-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-        
-        .user-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-        
-        .user-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-        }
-        
-        .user-card.active {
-            border-color: var(--primary);
-            background: #f0f7ff;
-        }
-        
-        .user-name {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--dark);
-            margin-bottom: 5px;
-        }
-        
-        .user-phone {
-            color: #64748b;
-            font-size: 14px;
-        }
-        
         .footer {
             text-align: center;
             padding: 25px;
@@ -383,262 +385,264 @@
                     <i class="fas fa-id-card-alt"></i>
                     <h1>SPIMF</h1>
                 </div>
-                <div class="welcome-message" id="welcomeMessage">
+                <div class="welcome-message">
                     Sistem Pengurusan Identiti Membership FareezOnzz
-                </div>
-                <div class="last-update" id="lastUpdate">
-                    Data dikemaskini: <span id="updateTime">-</span>
                 </div>
             </div>
 
             <!-- User Selection -->
-            <div class="tab-content active" id="userSelection">
+            <div class="user-selection">
                 <h2 class="section-title">
                     <i class="fas fa-users"></i>
-                    Senarai Ahli SPIMF
+                    Senarai Ahli SPIMF - Pilih Ahli untuk Kemaskini
                 </h2>
                 <div class="user-grid" id="userGrid">
                     <!-- Users will be loaded here -->
                 </div>
                 <div class="message" id="userMessage">
-                    Pilih ahli untuk lihat dan kemaskini maklumat
+                    Pilih ahli dari senarai di atas untuk lihat dan kemaskini maklumat
                 </div>
             </div>
 
-            <!-- Navigation -->
-            <div class="nav-tabs">
-                <button class="tab active" data-tab="profile">
-                    <i class="fas fa-user"></i>
-                    Maklumat Profile
-                </button>
-                <button class="tab" data-tab="media">
-                    <i class="fas fa-share-alt"></i>
-                    Media Sosial
-                </button>
-                <button class="tab" data-tab="personality">
-                    <i class="fas fa-brain"></i>
-                    Personality
-                </button>
-                <button class="tab" data-tab="additional">
-                    <i class="fas fa-info-circle"></i>
-                    Butiran Tambahan
-                </button>
-            </div>
-
-            <!-- Profile Tab -->
-            <div id="profile" class="tab-content">
-                <h2 class="section-title">
-                    <i class="fas fa-user-edit"></i>
-                    Kemaskini Maklumat Profile
-                </h2>
-                
-                <form id="profileForm" class="data-form">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="yourName">NAMA PENUH</label>
-                            <input type="text" id="yourName" name="YOUR NAME" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="yourAge">UMUR</label>
-                            <input type="number" id="yourAge" name="YOUR AGE" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="yourDob">TARIKH LAHIR</label>
-                            <input type="date" id="yourDob" name="YOUR DATE OF BIRTH" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="gender">JANTINA</label>
-                            <select id="gender" name="GENDER" required>
-                                <option value="MALE">LELAKI</option>
-                                <option value="FEMALE">PEREMPUAN</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="religion">AGAMA</label>
-                            <input type="text" id="religion" name="YOUR RELIGION" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="country">NEGARA</label>
-                            <input type="text" id="country" name="YOUR COUNTRY" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="state">NEGERI</label>
-                            <input type="text" id="state" name="YOUR STATE" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="phone">NO TELEFON</label>
-                            <input type="text" id="phone" name="PHONE NUMBER" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="leftHanded">KIDAL?</label>
-                            <select id="leftHanded" name="ARE YOU LEFT-HANDED" required>
-                                <option value="YES">YA</option>
-                                <option value="NO">TIDAK</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="dreamCareer">KERJAYA IMPIAN</label>
-                            <input type="text" id="dreamCareer" name="DREAM CAREER" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="email">EMAIL</label>
-                            <input type="email" id="email" name="EMAIL ADDRESS" required>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i>
-                        Kemaskini Profile
+            <!-- User Data Display -->
+            <div id="userData" class="hidden">
+                <!-- Navigation -->
+                <div class="nav-tabs">
+                    <button class="tab active" data-tab="profile">
+                        <i class="fas fa-user"></i>
+                        Maklumat Profile
                     </button>
-                </form>
-                
-                <div id="profileMessage" class="message hidden"></div>
-            </div>
+                    <button class="tab" data-tab="media">
+                        <i class="fas fa-share-alt"></i>
+                        Media Sosial
+                    </button>
+                    <button class="tab" data-tab="personality">
+                        <i class="fas fa-brain"></i>
+                        Personality
+                    </button>
+                    <button class="tab" data-tab="additional">
+                        <i class="fas fa-info-circle"></i>
+                        Butiran Tambahan
+                    </button>
+                </div>
 
-            <!-- Media Tab -->
-            <div id="media" class="tab-content">
-                <h2 class="section-title">
-                    <i class="fas fa-share-alt"></i>
-                    Maklumat Media Sosial
-                </h2>
-                
-                <form id="mediaForm" class="data-form">
-                    <div class="form-group">
-                        <label for="hasSocialMedia">ADA MEDIA SOSIAL (50+ FOLLOWERS)?</label>
-                        <select id="hasSocialMedia" name="DO YOU HAVE A SOCIAL MEDIA ACCOUNT AND HAVE MORE THAN 50 FOLLOWERS" required>
-                            <option value="NO">TIDAK</option>
-                            <option value="YES">YA</option>
-                        </select>
-                    </div>
+                <!-- Profile Tab -->
+                <div id="profile" class="tab-content active">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-edit"></i>
+                        Kemaskini Maklumat Profile
+                    </h2>
                     
-                    <div id="socialMediaFields" class="hidden">
+                    <form id="profileForm">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="tiktok">TIKTOK</label>
-                                <input type="text" id="tiktok" name="TIKTOK">
+                                <label for="yourName">NAMA PENUH</label>
+                                <input type="text" id="yourName" name="YOUR NAME">
                             </div>
                             
                             <div class="form-group">
-                                <label for="instagram">INSTAGRAM</label>
-                                <input type="text" id="instagram" name="INSTAGRAM">
+                                <label for="yourAge">UMUR</label>
+                                <input type="number" id="yourAge" name="YOUR AGE">
                             </div>
                             
                             <div class="form-group">
-                                <label for="youtube">YOUTUBE</label>
-                                <input type="text" id="youtube" name="YOUTUBE">
+                                <label for="yourDob">TARIKH LAHIR</label>
+                                <input type="date" id="yourDob" name="YOUR DATE OF BIRTH">
                             </div>
                             
                             <div class="form-group">
-                                <label for="twitter">TWITTER</label>
-                                <input type="text" id="twitter" name="TWITTER">
+                                <label for="gender">JANTINA</label>
+                                <select id="gender" name="GENDER">
+                                    <option value="">Pilih Jantina</option>
+                                    <option value="MALE">LELAKI</option>
+                                    <option value="FEMALE">PEREMPUAN</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="religion">AGAMA</label>
+                                <input type="text" id="religion" name="YOUR RELIGION">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="country">NEGARA</label>
+                                <input type="text" id="country" name="YOUR COUNTRY">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="state">NEGERI</label>
+                                <input type="text" id="state" name="YOUR STATE">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone">NO TELEFON</label>
+                                <input type="text" id="phone" name="PHONE NUMBER">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="leftHanded">KIDAL?</label>
+                                <select id="leftHanded" name="ARE YOU LEFT-HANDED">
+                                    <option value="">Pilih</option>
+                                    <option value="YES">YA</option>
+                                    <option value="NO">TIDAK</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="dreamCareer">KERJAYA IMPIAN</label>
+                                <input type="text" id="dreamCareer" name="DREAM CAREER">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">EMAIL</label>
+                                <input type="email" id="email" name="EMAIL ADDRESS">
                             </div>
                         </div>
-                    </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Kemaskini Profile
+                        </button>
+                    </form>
                     
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i>
-                        Kemaskini Media
-                    </button>
-                </form>
-                
-                <div id="mediaMessage" class="message hidden"></div>
-            </div>
+                    <div id="profileMessage" class="message hidden"></div>
+                </div>
 
-            <!-- Personality Tab -->
-            <div id="personality" class="tab-content">
-                <h2 class="section-title">
-                    <i class="fas fa-brain"></i>
-                    Maklumat Personality
-                </h2>
-                
-                <div class="info-grid">
-                    <div class="info-card">
-                        <h4>SUKA MEMBAIKI?</h4>
-                        <p id="likeToRepair">-</p>
-                    </div>
+                <!-- Media Tab -->
+                <div id="media" class="tab-content">
+                    <h2 class="section-title">
+                        <i class="fas fa-share-alt"></i>
+                        Maklumat Media Sosial
+                    </h2>
                     
-                    <div class="info-card">
-                        <h4>SUBJEK KEGEMARAN</h4>
-                        <p id="favoriteSubject">-</p>
-                    </div>
+                    <form id="mediaForm">
+                        <div class="form-group">
+                            <label for="hasSocialMedia">ADA MEDIA SOSIAL (50+ FOLLOWERS)?</label>
+                            <select id="hasSocialMedia" name="DO YOU HAVE A SOCIAL MEDIA ACCOUNT AND HAVE MORE THAN 50 FOLLOWERS">
+                                <option value="NO">TIDAK</option>
+                                <option value="YES">YA</option>
+                            </select>
+                        </div>
+                        
+                        <div id="socialMediaFields" class="hidden">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="tiktok">TIKTOK</label>
+                                    <input type="text" id="tiktok" name="TIKTOK">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="instagram">INSTAGRAM</label>
+                                    <input type="text" id="instagram" name="INSTAGRAM">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="youtube">YOUTUBE</label>
+                                    <input type="text" id="youtube" name="YOUTUBE">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="twitter">TWITTER</label>
+                                    <input type="text" id="twitter" name="TWITTER">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Kemaskini Media
+                        </button>
+                    </form>
                     
-                    <div class="info-card">
-                        <h4>SUBJEK PALING SUSAH</h4>
-                        <p id="difficultSubject">-</p>
+                    <div id="mediaMessage" class="message hidden"></div>
+                </div>
+
+                <!-- Personality Tab -->
+                <div id="personality" class="tab-content">
+                    <h2 class="section-title">
+                        <i class="fas fa-brain"></i>
+                        Maklumat Personality
+                    </h2>
+                    
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h4>SUKA MEMBAIKI?</h4>
+                            <p id="likeToRepair">-</p>
+                        </div>
+                        
+                        <div class="info-card">
+                            <h4>SUBJEK KEGEMARAN</h4>
+                            <p id="favoriteSubject">-</p>
+                        </div>
+                        
+                        <div class="info-card">
+                            <h4>SUBJEK PALING SUSAH</h4>
+                            <p id="difficultSubject">-</p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Additional Info Tab -->
-            <div id="additional" class="tab-content">
-                <h2 class="section-title">
-                    <i class="fas fa-info-circle"></i>
-                    Butiran Tambahan
-                </h2>
-                
-                <div class="info-grid">
-                    <div class="info-card">
-                        <h4>KENAL KAMI SEBAGAI</h4>
-                        <p id="knowUsAs">-</p>
-                    </div>
+                <!-- Additional Info Tab -->
+                <div id="additional" class="tab-content">
+                    <h2 class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Butiran Tambahan
+                    </h2>
                     
-                    <div class="info-card">
-                        <h4>TARIKH SEMASA</h4>
-                        <p id="currentDate">-</p>
-                    </div>
-                    
-                    <div class="info-card">
-                        <h4>SCORE</h4>
-                        <p id="score" class="score-value">-</p>
-                    </div>
-                    
-                    <div class="info-card copyable">
-                        <h4>ID CARD</h4>
-                        <div class="copy-field">
-                            <p id="idCardDisplay">-</p>
-                            <button class="copy-btn" data-target="idCardDisplay">
-                                <i class="fas fa-copy"></i>
-                            </button>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <h4>KENAL KAMI SEBAGAI</h4>
+                            <p id="knowUsAs">-</p>
                         </div>
-                    </div>
-                    
-                    <div class="info-card copyable">
-                        <h4>KODE USER</h4>
-                        <div class="copy-field">
-                            <p id="kodeUserDisplay">-</p>
-                            <button class="copy-btn" data-target="kodeUserDisplay">
-                                <i class="fas fa-copy"></i>
-                            </button>
+                        
+                        <div class="info-card">
+                            <h4>TARIKH SEMASA</h4>
+                            <p id="currentDate">-</p>
                         </div>
-                    </div>
-                    
-                    <div class="info-card copyable">
-                        <h4>AKAUN MEMBERSHIP</h4>
-                        <div class="copy-field">
-                            <p id="membershipAccount">-</p>
-                            <button class="copy-btn" data-target="membershipAccount">
-                                <i class="fas fa-copy"></i>
-                            </button>
+                        
+                        <div class="info-card">
+                            <h4>SCORE</h4>
+                            <p id="score">-</p>
                         </div>
-                    </div>
-                    
-                    <div class="info-card copyable">
-                        <h4>PASSWORD MEMBERSHIP</h4>
-                        <div class="copy-field">
-                            <p id="membershipPassword">-</p>
-                            <button class="copy-btn" data-target="membershipPassword">
-                                <i class="fas fa-copy"></i>
-                            </button>
+                        
+                        <div class="info-card copyable">
+                            <h4>ID CARD</h4>
+                            <div class="copy-field">
+                                <p id="idCardDisplay">-</p>
+                                <button class="copy-btn" data-target="idCardDisplay">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card copyable">
+                            <h4>KODE USER</h4>
+                            <div class="copy-field">
+                                <p id="kodeUserDisplay">-</p>
+                                <button class="copy-btn" data-target="kodeUserDisplay">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card copyable">
+                            <h4>AKAUN MEMBERSHIP</h4>
+                            <div class="copy-field">
+                                <p id="membershipAccount">-</p>
+                                <button class="copy-btn" data-target="membershipAccount">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="info-card copyable">
+                            <h4>PASSWORD MEMBERSHIP</h4>
+                            <div class="copy-field">
+                                <p id="membershipPassword">-</p>
+                                <button class="copy-btn" data-target="membershipPassword">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -669,6 +673,21 @@
                 try {
                     console.log('📥 Loading all users data...');
                     
+                    // Test connection first
+                    const testResponse = await fetch(this.APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({action: 'testConnection'})
+                    });
+
+                    const testResult = await testResponse.json();
+                    console.log('Connection test:', testResult);
+
+                    if (!testResult.success) {
+                        throw new Error(testResult.message || 'Failed to connect to Google Sheet');
+                    }
+
+                    // Load all data
                     const response = await fetch(this.APPS_SCRIPT_URL, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
@@ -710,6 +729,12 @@
 
             displayUserList() {
                 const userGrid = document.getElementById('userGrid');
+                
+                if (this.allUsers.length === 0) {
+                    userGrid.innerHTML = '<div class="message error">Tiada data user ditemukan</div>';
+                    return;
+                }
+
                 userGrid.innerHTML = '';
 
                 this.allUsers.forEach((user, index) => {
@@ -717,12 +742,12 @@
                     userCard.className = 'user-card';
                     userCard.innerHTML = `
                         <div class="user-name">${user['YOUR NAME'] || 'No Name'}</div>
-                        <div class="user-phone">${user['PHONE NUMBER'] || 'No Phone'}</div>
-                        <div class="user-id">${user['ID CARD REGISTRATION'] || 'No ID'}</div>
+                        <div class="user-phone">📱 ${user['PHONE NUMBER'] || 'No Phone'}</div>
+                        <div class="user-id">🆔 ${user['ID CARD REGISTRATION'] || 'No ID'}</div>
                     `;
                     
                     userCard.addEventListener('click', () => {
-                        this.selectUser(user);
+                        this.selectUser(user, userCard);
                     });
 
                     userGrid.appendChild(userCard);
@@ -730,18 +755,22 @@
 
                 // Auto select first user
                 if (this.allUsers.length > 0) {
-                    this.selectUser(this.allUsers[0]);
+                    const firstCard = userGrid.querySelector('.user-card');
+                    this.selectUser(this.allUsers[0], firstCard);
                 }
             }
 
-            selectUser(user) {
+            selectUser(user, cardElement) {
                 this.currentUser = user;
                 
                 // Update UI
                 document.querySelectorAll('.user-card').forEach(card => {
                     card.classList.remove('active');
                 });
-                event.currentTarget.classList.add('active');
+                cardElement.classList.add('active');
+                
+                // Show user data section
+                document.getElementById('userData').classList.remove('hidden');
                 
                 // Load user data
                 this.loadUserData();
@@ -752,11 +781,6 @@
 
             loadUserData() {
                 if (!this.currentUser) return;
-
-                // Update welcome message
-                document.getElementById('welcomeMessage').textContent = 
-                    `Data: ${this.currentUser['YOUR NAME'] || 'User'}`;
-                document.getElementById('updateTime').textContent = new Date().toLocaleString();
 
                 // Update profile form
                 this.populateForm('profileForm', this.currentUser);
@@ -786,8 +810,10 @@
                 
                 inputs.forEach(input => {
                     const fieldName = input.name;
-                    if (data[fieldName] && data[fieldName] !== '') {
+                    if (data[fieldName] !== undefined && data[fieldName] !== null && data[fieldName] !== '') {
                         input.value = data[fieldName];
+                    } else {
+                        input.value = '';
                     }
                 });
             }
@@ -835,11 +861,18 @@
             }
 
             async updateProfile() {
+                if (!this.currentUser) {
+                    this.showMessage('profileMessage', '❌ Sila pilih user dahulu', 'error');
+                    return;
+                }
+
                 const formData = new FormData(document.getElementById('profileForm'));
                 const updates = {};
                 
                 formData.forEach((value, key) => {
-                    updates[key] = value;
+                    if (value.trim() !== '') {
+                        updates[key] = value;
+                    }
                 });
 
                 const btn = document.querySelector('#profileForm .btn');
@@ -860,9 +893,11 @@
                     });
 
                     const result = await response.json();
+                    console.log('Update result:', result);
 
                     if (result.success) {
                         this.showMessage('profileMessage', '✅ Profile berjaya dikemaskini!', 'success');
+                        // Update current user data
                         Object.assign(this.currentUser, updates);
                     } else {
                         this.showMessage('profileMessage', '❌ ' + result.message, 'error');
@@ -876,11 +911,18 @@
             }
 
             async updateMedia() {
+                if (!this.currentUser) {
+                    this.showMessage('mediaMessage', '❌ Sila pilih user dahulu', 'error');
+                    return;
+                }
+
                 const formData = new FormData(document.getElementById('mediaForm'));
                 const updates = {};
                 
                 formData.forEach((value, key) => {
-                    updates[key] = value;
+                    if (value.trim() !== '') {
+                        updates[key] = value;
+                    }
                 });
 
                 const btn = document.querySelector('#mediaForm .btn');
@@ -946,18 +988,22 @@
                         btn.innerHTML = originalHTML;
                         btn.style.background = '';
                     }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
                 });
             }
 
             showMessage(elementId, message, type) {
                 const messageEl = document.getElementById(elementId);
-                messageEl.textContent = message;
-                messageEl.className = `message ${type}`;
-                messageEl.classList.remove('hidden');
+                if (messageEl) {
+                    messageEl.textContent = message;
+                    messageEl.className = `message ${type}`;
+                    messageEl.classList.remove('hidden');
 
-                setTimeout(() => {
-                    messageEl.classList.add('hidden');
-                }, 5000);
+                    setTimeout(() => {
+                        messageEl.classList.add('hidden');
+                    }, 5000);
+                }
             }
 
             showError(message) {
@@ -966,7 +1012,7 @@
             }
         }
 
-        // Initialize system
+        // Initialize system when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             new SPIMFSystem();
         });
