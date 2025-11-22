@@ -3,305 +3,1869 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPIMF - Sistem Pengurusan Identiti Membership</title>
+    <title>SPIMF PRO - Sistem Pengurusan Identiti Membership FareezOnzz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: Arial, sans-serif; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #cbd5e1;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--gradient);
             min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            color: white;
+        }
+
+        .loading-content {
+            text-align: center;
+            max-width: 400px;
+            padding: 2rem;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        .loading-progress {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: white;
+            width: 0%;
+            animation: loading 2s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes loading {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Maintenance Screen */
+        .maintenance-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            color: white;
             padding: 20px;
         }
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
+
+        .maintenance-container {
             background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        .logo {
+            border-radius: 20px;
+            padding: 2.5rem;
             text-align: center;
-            margin-bottom: 20px;
-            color: #2563eb;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            color: var(--dark);
         }
+
+        .maintenance-icon {
+            font-size: 4rem;
+            color: var(--warning);
+            margin-bottom: 1.5rem;
+        }
+
+        .operating-hours {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .operating-hours h3 {
+            color: var(--dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .operating-hours ul {
+            list-style: none;
+        }
+
+        .operating-hours li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--gray);
+        }
+
+        .operating-hours li:last-child {
+            border-bottom: none;
+        }
+
+        .countdown {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .login-subtitle {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .countdown-banner {
+            background: var(--warning);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .login-form {
+            margin-bottom: 1.5rem;
+        }
+
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 1.25rem;
         }
-        label {
+
+        .form-label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        input, select {
+
+        .form-input {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--light);
         }
-        button {
+
+        .form-input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background: white;
+        }
+
+        .login-btn {
             width: 100%;
-            padding: 12px;
-            background: #2563eb;
+            padding: 1rem;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            margin-top: 10px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
-        button:hover {
-            background: #1d4ed8;
+
+        .login-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .security-notice {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .security-notice i {
+            color: #d97706;
+            margin-top: 0.125rem;
+        }
+
+        .security-notice p {
+            color: #92400e;
+            font-size: 0.875rem;
+            line-height: 1.4;
+        }
+
+        /* Message Styles */
         .message {
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            text-align: center;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            font-weight: 500;
+            animation: slideDown 0.3s ease;
         }
-        .success { background: #d4edda; color: #155724; }
-        .error { background: #f8d7da; color: #721c24; }
-        .hidden { display: none; }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .message.warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        /* App Container */
+        .app-container {
+            min-height: 100vh;
+            background: var(--light);
+        }
+
+        /* Header */
+        .app-header {
+            background: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .app-logo i {
+            font-size: 1.5rem;
+        }
+
+        .welcome-message {
+            font-size: 1rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--light);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .system-status.online {
+            color: var(--success);
+        }
+
+        .system-status.offline {
+            color: var(--danger);
+        }
+
         .user-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: var(--light);
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            padding: 0.75rem 1rem;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Navigation */
+        .app-nav {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 72px;
+            z-index: 99;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            gap: 0.25rem;
+            overflow-x: auto;
+        }
+
+        .nav-item {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            color: var(--primary);
+            background: var(--light);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: var(--light);
+        }
+
+        .nav-item .badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Main Content */
+        .app-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-header {
+            margin-bottom: 2rem;
+        }
+
+        .tab-header h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tab-header p {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        /* Forms */
+        .data-form {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .form-actions {
+            text-align: right;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Conditional Fields */
+        .conditional-fields {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            animation: slideDown 0.3s ease;
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .info-card.with-icon {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .info-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-top: 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .info-content h4 {
+            color: var(--gray);
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-content p {
+            color: var(--dark);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .copyable {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copyable:hover {
+            background: var(--light);
+        }
+
+        .copy-field {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .copy-btn {
+            background: var(--light);
+            border: none;
+            border-radius: 6px;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .score-value {
+            font-size: 1.5rem !important;
+            font-weight: 700 !important;
+            color: var(--primary) !important;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .status-badge.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Actions Grid */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .action-content h4 {
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        .action-content p {
+            color: var(--gray);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .support-emails {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .email-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.3s ease;
+        }
+
+        .email-link:hover {
+            color: var(--primary-dark);
+        }
+
+        /* Disclaimer */
+        .disclaimer {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .disclaimer i {
+            color: #d97706;
+            margin-top: 0.125rem;
+        }
+
+        .disclaimer p {
+            color: #92400e;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .header-left {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-container {
+                padding: 0 1rem;
+            }
+            
+            .nav-item {
+                padding: 0.875rem 1rem;
+                font-size: 0.875rem;
+            }
+            
+            .app-main {
+                padding: 1.5rem 1rem;
+            }
+            
+            .data-form {
+                padding: 1.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-card {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 1.5rem;
+                margin: 0.5rem;
+            }
+            
+            .logo h1 {
+                font-size: 2rem;
+            }
+            
+            .tab-header h2 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Login Screen -->
-        <div id="loginScreen">
-            <div class="logo">
-                <h1>🔐 SPIMF SYSTEM</h1>
-                <p>Sistem Pengurusan Identiti Membership</p>
+    <!-- Loading Screen -->
+    <div id="loading" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>SPIMF Professional System</h2>
+            <p>Initializing secure connection...</p>
+            <div class="loading-progress">
+                <div class="loading-progress-bar"></div>
             </div>
-            
-            <form id="loginForm">
-                <div class="form-group">
-                    <label>📱 PHONE NUMBER</label>
-                    <input type="text" id="phoneNumber" required placeholder="Contoh: 0123456789">
-                </div>
-                <div class="form-group">
-                    <label>🆔 ID CARD REGISTRATION</label>
-                    <input type="text" id="idCard" required placeholder="Contoh: SPIMF-001">
-                </div>
-                <div class="form-group">
-                    <label>🔑 KODE USER</label>
-                    <input type="text" id="kodeUser" required placeholder="Contoh: USER123">
-                </div>
-                <button type="submit">🚀 LOGIN KE SISTEM</button>
-            </form>
-            
-            <div id="loginMessage" class="message hidden"></div>
-        </div>
-
-        <!-- App Screen -->
-        <div id="appScreen" class="hidden">
-            <div class="logo">
-                <h1>👤 PROFIL ANDA</h1>
-                <p>Hai, <span id="userName">-</span>!</p>
-            </div>
-            
-            <form id="profileForm">
-                <div class="form-group">
-                    <label>Nama Penuh</label>
-                    <input type="text" id="yourName" required>
-                </div>
-                <div class="form-group">
-                    <label>Umur</label>
-                    <input type="number" id="yourAge" required>
-                </div>
-                <div class="form-group">
-                    <label>Tarikh Lahir</label>
-                    <input type="date" id="yourDob" required>
-                </div>
-                <div class="form-group">
-                    <label>Jantina</label>
-                    <select id="gender" required>
-                        <option value="MALE">Lelaki</option>
-                        <option value="FEMALE">Perempuan</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Agama</label>
-                    <input type="text" id="religion" required>
-                </div>
-                <div class="form-group">
-                    <label>Negara</label>
-                    <input type="text" id="country" required>
-                </div>
-                
-                <button type="submit">💾 KEMASKINI DATA</button>
-            </form>
-            
-            <div id="profileMessage" class="message hidden"></div>
-            
-            <div class="user-info">
-                <h3>📋 INFO AKAN</h3>
-                <p><strong>ID Card:</strong> <span id="displayIdCard">-</span></p>
-                <p><strong>Kode User:</strong> <span id="displayKodeUser">-</span></p>
-                <p><strong>Phone:</strong> <span id="displayPhone">-</span></p>
-                <p><strong>Status:</strong> <span id="displayStatus">-</span></p>
-            </div>
-            
-            <button onclick="logout()" style="background: #dc3545;">🚪 LOG KELUAR</button>
+            <small>Version 4.0.0 | Secure Session</small>
         </div>
     </div>
 
-    <script>
-        // URL APP SCRIPT ANDA
-        const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyFgvBopjeR82k6-KXTZ1sNhrE6AbQFo0UItaFk1xCX57k5KOMOzGx3mQBsm5StMJHm/exec';
-        
-        let currentUser = null;
+    <!-- Maintenance Screen -->
+    <div id="maintenance" class="maintenance-screen hidden">
+        <div class="maintenance-container">
+            <div class="maintenance-icon">
+                <i class="fas fa-tools"></i>
+            </div>
+            <h1>Sistem Dalam Waktu Tidak Aktif</h1>
+            <p>Maaf, sistem SPIMF sedang tidak aktif pada waktu ini. Sila kembali pada waktu operasi yang ditetapkan.</p>
+            
+            <div class="operating-hours">
+                <h3><i class="fas fa-clock"></i> Waktu Operasi Sistem:</h3>
+                <ul>
+                    <li>6:00 Pagi Hingga 11:30 Pagi</li>
+                    <li>12:00 Tengahari Hingga 6:00 Petang</li>
+                    <li>6:30 Petang Hingga 11:59 Malam</li>
+                </ul>
+            </div>
+            
+            <div class="countdown" id="maintenanceCountdown">
+                Sistem akan diaktifkan semula pada: <span id="nextActivationTime">-</span>
+            </div>
+        </div>
+    </div>
 
-        // Setup event listeners
-        document.getElementById('loginForm').addEventListener('submit', handleLogin);
-        document.getElementById('profileForm').addEventListener('submit', updateProfile);
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen hidden">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="fas fa-id-card-alt"></i>
+                    <h1>SPIMF PRO</h1>
+                </div>
+                <p class="login-subtitle">Sistem Pengurusan Identiti Membership FareezOnzz</p>
+            </div>
 
-        async function handleLogin(e) {
-            e.preventDefault();
-            
-            const phone = document.getElementById('phoneNumber').value;
-            const idCard = document.getElementById('idCard').value;
-            const kodeUser = document.getElementById('kodeUser').value;
-            
-            const btn = document.querySelector('#loginForm button');
-            btn.innerHTML = '⏳ MENGESAHKAN...';
-            btn.disabled = true;
-            
-            try {
-                const formData = new URLSearchParams();
-                formData.append('action', 'login');
-                formData.append('phoneNumber', phone);
-                formData.append('idCard', idCard);
-                formData.append('kodeUser', kodeUser);
+            <div class="countdown-banner" id="loginCountdown">
+                <i class="fas fa-clock"></i>
+                <span>Sistem aktif hingga: <span id="timeToDeactivate">-</span></span>
+            </div>
+
+            <div class="security-notice">
+                <i class="fas fa-shield-alt"></i>
+                <p>Sistem dilindungi dengan enkripsi lanjutan. Sebarang percubaan tidak dibenarkan akan direkodkan.</p>
+            </div>
+
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="phoneNumber" class="form-label">
+                        <i class="fas fa-phone"></i>
+                        PHONE NUMBER
+                    </label>
+                    <input type="text" id="phoneNumber" name="phoneNumber" class="form-input" required 
+                           placeholder="Masukkan nombor telefon (Kolum G)" autocomplete="tel">
+                </div>
+
+                <div class="form-group">
+                    <label for="idCard" class="form-label">
+                        <i class="fas fa-id-card"></i>
+                        ID CARD REGISTRATION
+                    </label>
+                    <input type="text" id="idCard" name="idCard" class="form-input" required 
+                           placeholder="Masukkan ID kad pendaftaran (Kolum AB)" autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="kodeUser" class="form-label">
+                        <i class="fas fa-key"></i>
+                        KODE USER
+                    </label>
+                    <input type="password" id="kodeUser" name="kodeUser" class="form-input" required 
+                           placeholder="Masukkan kode user (Kolum AC)" autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-lock"></i>
+                    Secure Login
+                </button>
+            </form>
+
+            <div id="loginMessage" class="message hidden"></div>
+
+            <div class="security-notice">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>Jika ID Card Registration dan Kode User salah, pengguna akan dibanned selama 7 hari</p>
+            </div>
+
+            <div class="login-footer">
+                <p>&copy; Hak cipta SPIMF Online Sistem dipelihara sejak 22 November 2025</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="app-container hidden">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="app-logo">
+                        <i class="fas fa-id-card-alt"></i>
+                        <span>SPIMF PROFESSIONAL</span>
+                    </div>
+                    <div class="welcome-message" id="welcomeMessage">
+                        Hai, <span id="userName">-</span>! Selamat kembali di SPIMF
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="system-status online" id="systemStatus">
+                        <i class="fas fa-circle"></i>
+                        <span>Sistem Aktif</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <div>
+                            <div>Member</div>
+                            <div class="status-badge active" id="accountStatusBadge">
+                                <i class="fas fa-circle"></i>
+                                <span>AKTIF</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="logout-btn" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Log Keluar
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="app-nav">
+            <div class="nav-container">
+                <button class="nav-item active" data-tab="profile">
+                    <i class="fas fa-user-edit"></i>
+                    Maklumat Ahli
+                </button>
+                <button class="nav-item" data-tab="media">
+                    <i class="fas fa-share-alt"></i>
+                    Media Massa
+                </button>
+                <button class="nav-item" data-tab="personality">
+                    <i class="fas fa-brain"></i>
+                    Personality
+                </button>
+                <button class="nav-item" data-tab="additional">
+                    <i class="fas fa-info-circle"></i>
+                    Butiran Tambahan
+                </button>
+                <button class="nav-item" data-tab="actions">
+                    <i class="fas fa-cogs"></i>
+                    Tindakan Penuh
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Profile Tab -->
+            <div id="profile" class="tab-content active">
+                <div class="tab-header">
+                    <h2><i class="fas fa-user-edit"></i> Kemaskini Maklumat Ahli Diri Anda</h2>
+                    <p>Edit dan simpan maklumat peribadi anda dengan selamat</p>
+                </div>
                 
-                console.log('Sending login request...');
-                const response = await fetch(APP_SCRIPT_URL, {
-                    method: 'POST',
-                    body: formData
+                <form id="profileForm" class="data-form">
+                    <div class="form-section">
+                        <h3 class="form-section-title">Maklumat Peribadi</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="yourName" class="form-label">YOUR NAME / Nama anda</label>
+                                <input type="text" id="yourName" name="YOUR NAME" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="yourAge" class="form-label">YOUR AGE / Umur anda</label>
+                                <input type="number" id="yourAge" name="YOUR AGE" class="form-input" required min="1" max="120">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="yourDob" class="form-label">YOUR DATE OF BIRTH / Tarikh lahir anda</label>
+                                <input type="date" id="yourDob" name="YOUR DATE OF BIRTH" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="gender" class="form-label">GENDER / Jantina</label>
+                                <select id="gender" name="GENDER" class="form-input" required>
+                                    <option value="MALE">MALE / Lelaki</option>
+                                    <option value="FEMALE">FEMALE / Perempuan</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="religion" class="form-label">YOUR RELIGION / Agama anda</label>
+                                <input type="text" id="religion" name="YOUR RELIGION" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="country" class="form-label">YOUR COUNTRY / Negara anda</label>
+                                <input type="text" id="country" name="YOUR COUNTRY" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="state" class="form-label">YOUR STATE : DISTRICT/CITY / Negeri Anda: Daerah/Bandar</label>
+                                <input type="text" id="state" name="YOUR STATE" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone" class="form-label">PHONE NUMBER / Nombor telefon</label>
+                                <input type="text" id="phone" name="PHONE NUMBER" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="leftHanded" class="form-label">ARE YOU LEFT-HANDED "WRITING WITH LEFT HAND" / Adakah anda kidal "menulis dengan tangan kiri"</label>
+                                <select id="leftHanded" name="ARE YOU LEFT-HANDED" class="form-input" required>
+                                    <option value="YES">YES / Ya</option>
+                                    <option value="NO">NO / Tidak</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="dreamCareer" class="form-label">WHAT IS YOUR DREAM CAREER "YOUR ASPIRATION" / Apakah kerjaya impian anda "aspirasi anda"</label>
+                                <input type="text" id="dreamCareer" name="DREAM CAREER" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email" class="form-label">EMAIL ADDRESS</label>
+                                <input type="email" id="email" name="EMAIL ADDRESS" class="form-input" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Kemaskini Data Profil
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="profileMessage" class="message hidden"></div>
+            </div>
+
+            <!-- Media Tab -->
+            <div id="media" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-share-alt"></i> Kemaskini Maklumat Media Massa</h2>
+                    <p>Kemaskini maklumat media sosial anda</p>
+                </div>
+                
+                <form id="mediaForm" class="data-form">
+                    <div class="form-group">
+                        <label for="hasSocialMedia" class="form-label">ADA MEDIA SOSIAL DENGAN 50+ FOLLOWERS?</label>
+                        <select id="hasSocialMedia" name="DO YOU HAVE A SOCIAL MEDIA ACCOUNT AND HAVE MORE THAN 50 FOLLOWERS" class="form-input" required>
+                            <option value="NO">NO / Tiada</option>
+                            <option value="YES">YES / Ada</option>
+                        </select>
+                    </div>
+                    
+                    <div id="socialMediaFields" class="conditional-fields hidden">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="tiktok" class="form-label">TIKTOK</label>
+                                <input type="text" id="tiktok" name="TIKTOK" class="form-input">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="instagram" class="form-label">INSTAGRAM</label>
+                                <input type="text" id="instagram" name="INSTAGRAM" class="form-input">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="youtube" class="form-label">YOUTUBE</label>
+                                <input type="text" id="youtube" name="YOUTUBE" class="form-input">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="twitter" class="form-label">TWITTER</label>
+                                <input type="text" id="twitter" name="TWITTER" class="form-input">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Kemaskini Media
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="mediaMessage" class="message hidden"></div>
+            </div>
+
+            <!-- Personality Tab -->
+            <div id="personality" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-brain"></i> Personality Diri Anda</h2>
+                    <p>Maklumat personality dan minat anda</p>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-card with-icon">
+                        <div class="info-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>SUKA MEMBAIKI</h4>
+                            <p id="likeToRepair">-</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card with-icon">
+                        <div class="info-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>SUBJEK KEGEMARAN</h4>
+                            <p id="favoriteSubject">-</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card with-icon">
+                        <div class="info-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>SUBJEK PALING SUKAR</h4>
+                            <p id="difficultSubject">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Info Tab -->
+            <div id="additional" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-info-circle"></i> Butiran Tambahan</h2>
+                    <p>Maklumat tambahan mengenai akaun anda</p>
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>ANDA MENGENALI KAMI SEBAGAI</h4>
+                        <p id="knowUsAs">-</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h4>TARIKH SEMASA</h4>
+                        <p id="currentDate">-</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <h4>SCORE</h4>
+                        <p id="score" class="score-value">-</p>
+                    </div>
+                    
+                    <div class="info-card copyable" onclick="copyToClipboard('idCardDisplay')">
+                        <h4>ID CARD REGISTRATION</h4>
+                        <div class="copy-field">
+                            <p id="idCardDisplay">-</p>
+                            <button class="copy-btn">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card copyable" onclick="copyToClipboard('kodeUserDisplay')">
+                        <h4>KODE USER</h4>
+                        <div class="copy-field">
+                            <p id="kodeUserDisplay">-</p>
+                            <button class="copy-btn">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card copyable" onclick="copyToClipboard('membershipAccount')">
+                        <h4>MEMBERSHIP ACCOUNT</h4>
+                        <div class="copy-field">
+                            <p id="membershipAccount">-</p>
+                            <button class="copy-btn">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card copyable" onclick="copyToClipboard('membershipPassword')">
+                        <h4>MEMBERSHIP PASSWORD ACCOUNT</h4>
+                        <div class="copy-field">
+                            <p id="membershipPassword">-</p>
+                            <button class="copy-btn">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Tab -->
+            <div id="actions" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-cogs"></i> Tindakan Penuh</h2>
+                    <p>Pengurusan akaun dan tindakan sistem</p>
+                </div>
+                
+                <div class="actions-grid">
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>LOG / CACHE</h4>
+                            <p>Kemaskinian setiap sesuatu yang diperbaharui</p>
+                            <button class="btn btn-secondary" id="viewLogsBtn">
+                                Lihat Log
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>HISTORY RETURN</h4>
+                            <p>Kembalikan data kepada data asal</p>
+                            <button class="btn btn-warning" id="revertDataBtn">
+                                Pulihkan Data
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>STATUS ACCOUNT</h4>
+                            <p id="accountStatusText">Status: -</p>
+                            <div class="status-badge" id="statusBadge">
+                                <i class="fas fa-circle"></i>
+                                <span>-</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>HUBUNGI SOKONGAN</h4>
+                            <p>Dapatkan bantuan daripada pihak sokongan</p>
+                            <div class="support-emails">
+                                <a href="mailto:pfareezonzz01@gmail.com" class="email-link">
+                                    <i class="fas fa-envelope"></i>
+                                    pfareezonzz01@gmail.com
+                                </a>
+                                <a href="mailto:developerfareezonzz@gmail.com" class="email-link">
+                                    <i class="fas fa-envelope"></i>
+                                    developerfareezonzz@gmail.com
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="disclaimer">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Jika berlaku apa-apa atas kecuaian diri sendiri tidak dapat dibantu oleh pihak SPIMF</p>
+                </div>
+                
+                <div id="actionMessage" class="message hidden"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // SPIMF PROFESSIONAL SYSTEM
+        class SPIMFProfessionalSystem {
+            constructor() {
+                this.currentUser = null;
+                this.APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8aLeKlKYaATtvOk1t49JL33Iub5QrwzYw6y_grda6-6bXm7wreAKXVwBwYGoU-hCC/exec';
+                this.systemStatus = 'checking';
+                this.init();
+            }
+
+            init() {
+                console.log('🚀 SPIMF Professional System Initializing...');
+                this.setupEventListeners();
+                this.showLoadingScreen();
+                this.checkSystemStatus();
+            }
+
+            showLoadingScreen() {
+                const loadingScreen = document.getElementById('loading');
+                loadingScreen.classList.remove('hidden');
+            }
+
+            hideLoadingScreen() {
+                document.getElementById('loading').classList.add('hidden');
+            }
+
+            async checkSystemStatus() {
+                try {
+                    console.log('🔍 Checking system status...');
+                    const response = await this.callApi('GET', { action: 'systemStatus' });
+                    
+                    if (response.success) {
+                        this.systemStatus = response.status.operational ? 'online' : 'offline';
+                        
+                        if (response.status.operational) {
+                            this.updateSystemStatus('online');
+                            this.hideLoadingScreen();
+                            this.showLoginScreen();
+                        } else {
+                            this.showMaintenanceScreen(response.status);
+                        }
+                    } else {
+                        throw new Error('Status check failed');
+                    }
+                } catch (error) {
+                    console.error('Status check error:', error);
+                    this.systemStatus = 'offline';
+                    this.showMaintenanceScreen({ nextActivation: '6:00 Pagi' });
+                }
+            }
+
+            showMaintenanceScreen(status) {
+                this.hideLoadingScreen();
+                const maintenanceScreen = document.getElementById('maintenance');
+                const nextActivation = document.getElementById('nextActivationTime');
+                
+                if (nextActivation && status.nextActivation) {
+                    nextActivation.textContent = status.nextActivation;
+                }
+                
+                maintenanceScreen.classList.remove('hidden');
+            }
+
+            showLoginScreen() {
+                const maintenanceScreen = document.getElementById('maintenance');
+                const loginScreen = document.getElementById('loginScreen');
+                
+                maintenanceScreen.classList.add('hidden');
+                loginScreen.classList.remove('hidden');
+                
+                // Update countdown banner
+                this.updateLoginCountdown();
+            }
+
+            updateLoginCountdown() {
+                const now = new Date();
+                const currentHour = now.getHours() + (now.getMinutes() / 60);
+                
+                let deactivateTime = '';
+                if (currentHour < 11.5) {
+                    deactivateTime = '11:30 Pagi';
+                } else if (currentHour < 18) {
+                    deactivateTime = '6:00 Petang';
+                } else {
+                    deactivateTime = '11:59 Malam';
+                }
+                
+                const countdownElement = document.getElementById('timeToDeactivate');
+                if (countdownElement) {
+                    countdownElement.textContent = deactivateTime;
+                }
+            }
+
+            updateSystemStatus(status) {
+                const statusElement = document.getElementById('systemStatus');
+                if (statusElement) {
+                    statusElement.className = `system-status ${status}`;
+                    statusElement.innerHTML = `<i class="fas fa-circle"></i><span>Sistem ${status.charAt(0).toUpperCase() + status.slice(1)}</span>`;
+                }
+            }
+
+            async callApi(method = 'GET', data = null) {
+                try {
+                    let url = this.APPS_SCRIPT_URL;
+                    const options = {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        }
+                    };
+
+                    if (data && method !== 'GET') {
+                        options.body = new URLSearchParams(data).toString();
+                    } else if (data && method === 'GET') {
+                        const params = new URLSearchParams(data).toString();
+                        url += '?' + params;
+                    }
+
+                    console.log(`🌐 API Call: ${method} ${url}`);
+                    const response = await fetch(url, options);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    console.log('📦 Response:', result);
+                    return result;
+
+                } catch (error) {
+                    console.error('❌ API Error:', error);
+                    throw error;
+                }
+            }
+
+            setupEventListeners() {
+                // Login form
+                document.getElementById('loginForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleLogin();
+                });
+
+                // Navigation tabs
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        this.switchTab(e.currentTarget.dataset.tab);
+                    });
+                });
+
+                // Profile form
+                document.getElementById('profileForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.updateProfile();
+                });
+
+                // Media form
+                document.getElementById('mediaForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.updateMedia();
+                });
+
+                // Social media toggle
+                document.getElementById('hasSocialMedia').addEventListener('change', (e) => {
+                    this.toggleSocialMediaFields(e.target.value === 'YES');
+                });
+
+                // Logout button
+                document.getElementById('logoutBtn').addEventListener('click', () => {
+                    this.logout();
+                });
+
+                // Copy buttons
+                document.querySelectorAll('.copyable').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const targetId = e.currentTarget.querySelector('p').id;
+                        this.copyToClipboard(targetId);
+                    });
+                });
+            }
+
+            async handleLogin() {
+                const phone = document.getElementById('phoneNumber').value;
+                const idCard = document.getElementById('idCard').value;
+                const kodeUser = document.getElementById('kodeUser').value;
+
+                const btn = document.querySelector('.login-btn');
+                const originalText = btn.innerHTML;
+                
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengesahkan...';
+                btn.disabled = true;
+
+                try {
+                    const response = await this.callApi('POST', {
+                        action: 'login',
+                        phoneNumber: phone,
+                        idCard: idCard,
+                        kodeUser: kodeUser
+                    });
+
+                    if (response.success) {
+                        this.showMessage('loginMessage', '✅ ' + response.message, 'success');
+                        this.currentUser = response.userData;
+                        
+                        setTimeout(() => {
+                            this.showAppScreen();
+                            this.loadUserData();
+                        }, 1000);
+                        
+                    } else {
+                        this.showMessage('loginMessage', '❌ ' + response.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    this.showMessage('loginMessage', '❌ Ralat sistem. Cuba lagi.', 'error');
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            }
+
+            async updateProfile() {
+                if (!this.currentUser) return;
+
+                const formData = new FormData(document.getElementById('profileForm'));
+                const updates = {};
+                
+                formData.forEach((value, key) => {
+                    if (value) updates[key] = value;
+                });
+
+                const btn = document.querySelector('#profileForm .btn-primary');
+                const originalText = btn.innerHTML;
+                
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+                btn.disabled = true;
+
+                try {
+                    const response = await this.callApi('POST', {
+                        action: 'updateProfile',
+                        row: this.currentUser.row,
+                        ...updates
+                    });
+
+                    if (response.success) {
+                        this.showMessage('profileMessage', '✅ ' + response.message, 'success');
+                        // Update local user data
+                        Object.assign(this.currentUser.profile, updates);
+                    } else {
+                        this.showMessage('profileMessage', '❌ ' + response.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Update error:', error);
+                    this.showMessage('profileMessage', '❌ Gagal menyimpan data', 'error');
+                } finally {
+                    btn.innerHTML = '<i class="fas fa-save"></i> Kemaskini Data Profil';
+                    btn.disabled = false;
+                }
+            }
+
+            async updateMedia() {
+                if (!this.currentUser) return;
+
+                const formData = new FormData(document.getElementById('mediaForm'));
+                const updates = {};
+                
+                formData.forEach((value, key) => {
+                    if (value) updates[key] = value;
+                });
+
+                const btn = document.querySelector('#mediaForm .btn-primary');
+                const originalText = btn.innerHTML;
+                
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+                btn.disabled = true;
+
+                try {
+                    const response = await this.callApi('POST', {
+                        action: 'updateMedia',
+                        row: this.currentUser.row,
+                        ...updates
+                    });
+
+                    if (response.success) {
+                        this.showMessage('mediaMessage', '✅ ' + response.message, 'success');
+                        Object.assign(this.currentUser.media, updates);
+                        this.toggleSocialMediaFields(updates['DO YOU HAVE A SOCIAL MEDIA ACCOUNT AND HAVE MORE THAN 50 FOLLOWERS'] === 'YES');
+                    } else {
+                        this.showMessage('mediaMessage', '❌ ' + response.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Media update error:', error);
+                    this.showMessage('mediaMessage', '❌ Gagal menyimpan media', 'error');
+                } finally {
+                    btn.innerHTML = '<i class="fas fa-save"></i> Kemaskini Media';
+                    btn.disabled = false;
+                }
+            }
+
+            loadUserData() {
+                if (!this.currentUser) return;
+
+                // Update welcome message and avatar
+                document.getElementById('userName').textContent = this.currentUser.profile['YOUR NAME'] || 'User';
+                document.getElementById('userAvatar').textContent = (this.currentUser.profile['YOUR NAME'] || 'U').charAt(0).toUpperCase();
+
+                // Update profile form
+                this.populateForm('profileForm', this.currentUser.profile);
+
+                // Update media form
+                this.populateForm('mediaForm', this.currentUser.media);
+                this.toggleSocialMediaFields(this.currentUser.media['DO YOU HAVE A SOCIAL MEDIA ACCOUNT AND HAVE MORE THAN 50 FOLLOWERS'] === 'YES');
+
+                // Update personality info
+                document.getElementById('likeToRepair').textContent = this.currentUser.personality['DO YOU LIKE TO REPAIR'] || '-';
+                document.getElementById('favoriteSubject').textContent = this.currentUser.personality['YOUR FAVORITE SUBJECT'] || '-';
+                document.getElementById('difficultSubject').textContent = this.currentUser.personality['THE SUBJECT YOU FIND MOST DIFFICULT'] || '-';
+
+                // Update additional info
+                document.getElementById('knowUsAs').textContent = this.currentUser.additional['YOU KNOW US AS'] || '-';
+                document.getElementById('currentDate').textContent = this.currentUser.additional['CURRENT DATE'] || '-';
+                document.getElementById('score').textContent = this.currentUser.additional['SCORE'] || '-';
+                document.getElementById('idCardDisplay').textContent = this.currentUser.additional['ID CARD REGISTRATION'] || '-';
+                document.getElementById('kodeUserDisplay').textContent = this.currentUser.additional['KODE USER'] || '-';
+                document.getElementById('membershipAccount').textContent = this.currentUser.additional['MEMBERSHIP ACCOUNT'] || '-';
+                document.getElementById('membershipPassword').textContent = this.currentUser.additional['MEMBERSHIP PASSWORD ACCOUNT'] || '-';
+
+                // Update account status
+                this.updateAccountStatus(this.currentUser.additional['STATUS ACCOUNT']);
+            }
+
+            populateForm(formId, data) {
+                const form = document.getElementById(formId);
+                const inputs = form.querySelectorAll('input, select, textarea');
+                
+                inputs.forEach(input => {
+                    const fieldName = input.name;
+                    if (data[fieldName] !== undefined && data[fieldName] !== null && data[fieldName] !== '') {
+                        input.value = data[fieldName];
+                    }
+                });
+            }
+
+            toggleSocialMediaFields(show) {
+                const fields = document.getElementById('socialMediaFields');
+                if (show) {
+                    fields.classList.remove('hidden');
+                } else {
+                    fields.classList.add('hidden');
+                }
+            }
+
+            updateAccountStatus(status) {
+                const statusBadge = document.getElementById('statusBadge');
+                const accountStatusBadge = document.getElementById('accountStatusBadge');
+                const accountStatusText = document.getElementById('accountStatusText');
+                
+                const isActive = status === '✅AKTIF';
+                
+                if (statusBadge) {
+                    statusBadge.className = `status-badge ${isActive ? 'active' : 'inactive'}`;
+                    statusBadge.innerHTML = `<i class="fas fa-circle"></i><span>${status || 'UNKNOWN'}</span>`;
+                }
+                
+                if (accountStatusBadge) {
+                    accountStatusBadge.className = `status-badge ${isActive ? 'active' : 'inactive'}`;
+                    accountStatusBadge.innerHTML = `<i class="fas fa-circle"></i><span>${isActive ? 'AKTIF' : 'TIDAK AKTIF'}</span>`;
+                }
+                
+                if (accountStatusText) {
+                    accountStatusText.textContent = `Status: ${isActive ? 'Akaun Aktif' : 'Akaun Tidak Aktif'}`;
+                }
+            }
+
+            showAppScreen() {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+            }
+
+            switchTab(tabName) {
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
                 });
                 
-                const result = await response.json();
-                console.log('Login response:', result);
-                
-                if (result.success) {
-                    showMessage('loginMessage', '✅ LOGIN BERJAYA!', 'success');
-                    currentUser = result.userData;
+                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+                document.getElementById(tabName).classList.add('active');
+            }
+
+            logout() {
+                if (confirm('Adakah anda pasti ingin log keluar?')) {
+                    this.currentUser = null;
+                    document.getElementById('app').classList.add('hidden');
+                    this.showLoginScreen();
+                    document.getElementById('loginForm').reset();
+                }
+            }
+
+            copyToClipboard(targetId) {
+                const text = document.getElementById(targetId).textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    const element = document.querySelector(`[onclick*="${targetId}"]`);
+                    const btn = element.querySelector('.copy-btn');
+                    const originalHTML = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check"></i>';
+                    btn.style.background = '#10b981';
                     
                     setTimeout(() => {
-                        showApp();
-                        loadUserData();
-                    }, 1000);
-                    
-                } else {
-                    showMessage('loginMessage', '❌ ' + result.message, 'error');
-                }
-                
-            } catch (error) {
-                console.error('Login error:', error);
-                showMessage('loginMessage', '❌ Ralat sistem. Cuba lagi.', 'error');
-            }
-            
-            btn.innerHTML = '🚀 LOGIN KE SISTEM';
-            btn.disabled = false;
-        }
-
-        async function updateProfile(e) {
-            e.preventDefault();
-            
-            if (!currentUser) return;
-            
-            const btn = document.querySelector('#profileForm button');
-            btn.innerHTML = '⏳ MENYIMPAN...';
-            btn.disabled = true;
-            
-            try {
-                const formData = new URLSearchParams();
-                formData.append('action', 'updateProfile');
-                formData.append('row', currentUser.row);
-                formData.append('YOUR NAME', document.getElementById('yourName').value);
-                formData.append('YOUR AGE', document.getElementById('yourAge').value);
-                formData.append('YOUR DATE OF BIRTH', document.getElementById('yourDob').value);
-                formData.append('GENDER', document.getElementById('gender').value);
-                formData.append('YOUR RELIGION', document.getElementById('religion').value);
-                formData.append('YOUR COUNTRY', document.getElementById('country').value);
-                
-                console.log('Sending update request...');
-                const response = await fetch(APP_SCRIPT_URL, {
-                    method: 'POST',
-                    body: formData
+                        btn.innerHTML = originalHTML;
+                        btn.style.background = '';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Copy failed:', err);
                 });
-                
-                const result = await response.json();
-                console.log('Update response:', result);
-                
-                if (result.success) {
-                    showMessage('profileMessage', '✅ DATA BERJAYA DIKEMASKINI!', 'success');
-                    // Update local data
-                    currentUser['YOUR NAME'] = document.getElementById('yourName').value;
-                    currentUser['YOUR AGE'] = document.getElementById('yourAge').value;
-                    document.getElementById('userName').textContent = currentUser['YOUR NAME'];
-                } else {
-                    showMessage('profileMessage', '❌ ' + result.message, 'error');
+            }
+
+            showMessage(elementId, message, type) {
+                const messageEl = document.getElementById(elementId);
+                if (messageEl) {
+                    messageEl.textContent = message;
+                    messageEl.className = `message ${type}`;
+                    messageEl.classList.remove('hidden');
+
+                    setTimeout(() => {
+                        messageEl.classList.add('hidden');
+                    }, 5000);
                 }
-                
-            } catch (error) {
-                console.error('Update error:', error);
-                showMessage('profileMessage', '❌ Gagal menyimpan data', 'error');
-            }
-            
-            btn.innerHTML = '💾 KEMASKINI DATA';
-            btn.disabled = false;
-        }
-
-        function loadUserData() {
-            if (!currentUser) return;
-            
-            document.getElementById('userName').textContent = currentUser['YOUR NAME'] || 'User';
-            document.getElementById('yourName').value = currentUser['YOUR NAME'] || '';
-            document.getElementById('yourAge').value = currentUser['YOUR AGE'] || '';
-            document.getElementById('yourDob').value = currentUser['YOUR DATE OF BIRTH'] || '';
-            document.getElementById('gender').value = currentUser['GENDER'] || 'MALE';
-            document.getElementById('religion').value = currentUser['YOUR RELIGION'] || '';
-            document.getElementById('country').value = currentUser['YOUR COUNTRY'] || '';
-            
-            document.getElementById('displayIdCard').textContent = currentUser['ID CARD REGISTRATION'] || '-';
-            document.getElementById('displayKodeUser').textContent = currentUser['KODE USER'] || '-';
-            document.getElementById('displayPhone').textContent = currentUser['PHONE NUMBER'] || '-';
-            document.getElementById('displayStatus').textContent = currentUser['STATUS ACCOUNT'] || 'AKTIF';
-        }
-
-        function showApp() {
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.getElementById('appScreen').classList.remove('hidden');
-        }
-
-        function logout() {
-            if (confirm('Log keluar dari sistem?')) {
-                currentUser = null;
-                document.getElementById('appScreen').classList.add('hidden');
-                document.getElementById('loginScreen').classList.remove('hidden');
-                document.getElementById('loginForm').reset();
             }
         }
 
-        function showMessage(elementId, message, type) {
-            const element = document.getElementById(elementId);
-            element.textContent = message;
-            element.className = `message ${type}`;
-            element.classList.remove('hidden');
-            
-            setTimeout(() => {
-                element.classList.add('hidden');
-            }, 5000);
-        }
+        // Initialize system
+        document.addEventListener('DOMContentLoaded', () => {
+            new SPIMFProfessionalSystem();
+        });
 
-        console.log('SPIMF System Ready!');
+        // Global function for copy
+        function copyToClipboard(targetId) {
+            const system = document.querySelector('body')._system;
+            if (system && system.copyToClipboard) {
+                system.copyToClipboard(targetId);
+            }
+        }
     </script>
 </body>
 </html>
