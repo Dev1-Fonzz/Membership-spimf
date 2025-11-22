@@ -1428,7 +1428,7 @@
         class SPIMFProfessionalSystem {
             constructor() {
                 this.currentUser = null;
-                this.APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz8aLeKlKYaATtvOk1t49JL33Iub5QrwzYw6y_grda6-6bXm7wreAKXVwBwYGoU-hCC/exec';
+                this.APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzM8WNPhjQ8U2J5mlDl2YErEafX_BTiCAueJJK3gSa5Cy635XrfyITZ1hLuSNIoKStP/exec';
                 this.systemStatus = 'checking';
                 this.init();
             }
@@ -1455,14 +1455,14 @@
                     const response = await this.callApi('GET', { action: 'systemStatus' });
                     
                     if (response.success) {
-                        this.systemStatus = response.status.operational ? 'online' : 'offline';
+                        this.systemStatus = response.operational ? 'online' : 'offline';
                         
-                        if (response.status.operational) {
+                        if (response.operational) {
                             this.updateSystemStatus('online');
                             this.hideLoadingScreen();
                             this.showLoginScreen();
                         } else {
-                            this.showMaintenanceScreen(response.status);
+                            this.showMaintenanceScreen(response);
                         }
                     } else {
                         throw new Error('Status check failed');
@@ -1524,14 +1524,15 @@
                 }
             }
 
-            async callApi(method = 'GET', data = null) {
+            async callApi(method = 'POST', data = null) {
                 try {
                     let url = this.APPS_SCRIPT_URL;
                     const options = {
                         method: method,
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded',
-                        }
+                        },
+                        redirect: 'follow'
                     };
 
                     if (data && method !== 'GET') {
@@ -1541,7 +1542,7 @@
                         url += '?' + params;
                     }
 
-                    console.log(`🌐 API Call: ${method} ${url}`);
+                    console.log(`🌐 API Call: ${method} ${url}`, data);
                     const response = await fetch(url, options);
                     
                     if (!response.ok) {
@@ -1600,6 +1601,11 @@
                         const targetId = e.currentTarget.querySelector('p').id;
                         this.copyToClipboard(targetId);
                     });
+                });
+
+                // Revert data button
+                document.getElementById('revertDataBtn').addEventListener('click', () => {
+                    this.revertData();
                 });
             }
 
@@ -1718,6 +1724,30 @@
                 } finally {
                     btn.innerHTML = '<i class="fas fa-save"></i> Kemaskini Media';
                     btn.disabled = false;
+                }
+            }
+
+            async revertData() {
+                if (!this.currentUser) return;
+
+                try {
+                    const response = await this.callApi('POST', {
+                        action: 'revertData',
+                        row: this.currentUser.row
+                    });
+
+                    if (response.success) {
+                        this.showMessage('actionMessage', '✅ ' + response.message, 'success');
+                        // Reload user data after revert
+                        setTimeout(() => {
+                            this.loadUserData();
+                        }, 1000);
+                    } else {
+                        this.showMessage('actionMessage', '❌ ' + response.message, 'error');
+                    }
+                } catch (error) {
+                    console.error('Revert error:', error);
+                    this.showMessage('actionMessage', '❌ Gagal memulihkan data', 'error');
                 }
             }
 
@@ -1856,14 +1886,13 @@
 
         // Initialize system
         document.addEventListener('DOMContentLoaded', () => {
-            new SPIMFProfessionalSystem();
+            window.spimfSystem = new SPIMFProfessionalSystem();
         });
 
         // Global function for copy
         function copyToClipboard(targetId) {
-            const system = document.querySelector('body')._system;
-            if (system && system.copyToClipboard) {
-                system.copyToClipboard(targetId);
+            if (window.spimfSystem && window.spimfSystem.copyToClipboard) {
+                window.spimfSystem.copyToClipboard(targetId);
             }
         }
     </script>
