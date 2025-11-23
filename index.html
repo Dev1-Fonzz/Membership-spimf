@@ -958,6 +958,7 @@
             <div class="operating-hours">
                 <h3><i class="fas fa-clock"></i> Waktu Operasi Sistem:</h3>
                 <ul>
+                    <li>1:00 Pagi Hingga 5:00 Pagi</li>
                     <li>6:00 Pagi Hingga 11:30 Pagi</li>
                     <li>12:00 Tengahari Hingga 6:00 Petang</li>
                     <li>6:30 Petang Hingga 11:59 Malam</li>
@@ -1502,7 +1503,9 @@
                 const currentHour = now.getHours() + (now.getMinutes() / 60);
                 
                 let deactivateTime = '';
-                if (currentHour < 11.5) {
+                if (currentHour < 5) {
+                    deactivateTime = '5:00 Pagi';
+                } else if (currentHour < 11.5) {
                     deactivateTime = '11:30 Pagi';
                 } else if (currentHour < 18) {
                     deactivateTime = '6:00 Petang';
@@ -1546,7 +1549,7 @@
                     const response = await fetch(url, options);
                     
                     if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
 
                     const result = await response.json();
@@ -1555,7 +1558,7 @@
 
                 } catch (error) {
                     console.error('❌ API Error:', error);
-                    throw error;
+                    throw new Error(`Gagal berhubung dengan sistem: ${error.message}`);
                 }
             }
 
@@ -1607,12 +1610,22 @@
                 document.getElementById('revertDataBtn').addEventListener('click', () => {
                     this.revertData();
                 });
+
+                // View logs button
+                document.getElementById('viewLogsBtn').addEventListener('click', () => {
+                    this.viewLogs();
+                });
             }
 
             async handleLogin() {
-                const phone = document.getElementById('phoneNumber').value;
-                const idCard = document.getElementById('idCard').value;
-                const kodeUser = document.getElementById('kodeUser').value;
+                const phone = document.getElementById('phoneNumber').value.trim();
+                const idCard = document.getElementById('idCard').value.trim();
+                const kodeUser = document.getElementById('kodeUser').value.trim();
+
+                if (!phone || !idCard || !kodeUser) {
+                    this.showMessage('loginMessage', '❌ Sila isi semua medan yang diperlukan', 'error');
+                    return;
+                }
 
                 const btn = document.querySelector('.login-btn');
                 const originalText = btn.innerHTML;
@@ -1642,7 +1655,7 @@
                     }
                 } catch (error) {
                     console.error('Login error:', error);
-                    this.showMessage('loginMessage', '❌ Ralat sistem. Cuba lagi.', 'error');
+                    this.showMessage('loginMessage', '❌ ' + error.message, 'error');
                 } finally {
                     btn.innerHTML = originalText;
                     btn.disabled = false;
@@ -1650,14 +1663,28 @@
             }
 
             async updateProfile() {
-                if (!this.currentUser) return;
+                if (!this.currentUser) {
+                    this.showMessage('profileMessage', '❌ Sila log masuk semula', 'error');
+                    return;
+                }
 
                 const formData = new FormData(document.getElementById('profileForm'));
                 const updates = {};
                 
                 formData.forEach((value, key) => {
-                    if (value) updates[key] = value;
+                    if (value && value.toString().trim() !== '') {
+                        updates[key] = value.toString().trim();
+                    }
                 });
+
+                // Validate required fields
+                const requiredFields = ['YOUR NAME', 'YOUR AGE', 'YOUR DATE OF BIRTH', 'GENDER', 'YOUR RELIGION', 'YOUR COUNTRY', 'YOUR STATE', 'PHONE NUMBER', 'ARE YOU LEFT-HANDED', 'DREAM CAREER', 'EMAIL ADDRESS'];
+                const missingFields = requiredFields.filter(field => !updates[field]);
+                
+                if (missingFields.length > 0) {
+                    this.showMessage('profileMessage', '❌ Sila isi semua medan yang diperlukan', 'error');
+                    return;
+                }
 
                 const btn = document.querySelector('#profileForm .btn-primary');
                 const originalText = btn.innerHTML;
@@ -1681,7 +1708,7 @@
                     }
                 } catch (error) {
                     console.error('Update error:', error);
-                    this.showMessage('profileMessage', '❌ Gagal menyimpan data', 'error');
+                    this.showMessage('profileMessage', '❌ ' + error.message, 'error');
                 } finally {
                     btn.innerHTML = '<i class="fas fa-save"></i> Kemaskini Data Profil';
                     btn.disabled = false;
@@ -1689,13 +1716,18 @@
             }
 
             async updateMedia() {
-                if (!this.currentUser) return;
+                if (!this.currentUser) {
+                    this.showMessage('mediaMessage', '❌ Sila log masuk semula', 'error');
+                    return;
+                }
 
                 const formData = new FormData(document.getElementById('mediaForm'));
                 const updates = {};
                 
                 formData.forEach((value, key) => {
-                    if (value) updates[key] = value;
+                    if (value && value.toString().trim() !== '') {
+                        updates[key] = value.toString().trim();
+                    }
                 });
 
                 const btn = document.querySelector('#mediaForm .btn-primary');
@@ -1720,7 +1752,7 @@
                     }
                 } catch (error) {
                     console.error('Media update error:', error);
-                    this.showMessage('mediaMessage', '❌ Gagal menyimpan media', 'error');
+                    this.showMessage('mediaMessage', '❌ ' + error.message, 'error');
                 } finally {
                     btn.innerHTML = '<i class="fas fa-save"></i> Kemaskini Media';
                     btn.disabled = false;
@@ -1728,7 +1760,14 @@
             }
 
             async revertData() {
-                if (!this.currentUser) return;
+                if (!this.currentUser) {
+                    this.showMessage('actionMessage', '❌ Sila log masuk semula', 'error');
+                    return;
+                }
+
+                if (!confirm('Adakah anda pasti ingin memulihkan data kepada keadaan asal?')) {
+                    return;
+                }
 
                 try {
                     const response = await this.callApi('POST', {
@@ -1747,40 +1786,48 @@
                     }
                 } catch (error) {
                     console.error('Revert error:', error);
-                    this.showMessage('actionMessage', '❌ Gagal memulihkan data', 'error');
+                    this.showMessage('actionMessage', '❌ ' + error.message, 'error');
                 }
+            }
+
+            async viewLogs() {
+                this.showMessage('actionMessage', '📋 Fungsi log sedang dalam pembangunan', 'warning');
             }
 
             loadUserData() {
                 if (!this.currentUser) return;
 
+                console.log('Loading user data:', this.currentUser);
+
                 // Update welcome message and avatar
-                document.getElementById('userName').textContent = this.currentUser.profile['YOUR NAME'] || 'User';
-                document.getElementById('userAvatar').textContent = (this.currentUser.profile['YOUR NAME'] || 'U').charAt(0).toUpperCase();
+                const userName = this.currentUser.profile?.['YOUR NAME'] || 'User';
+                document.getElementById('userName').textContent = userName;
+                document.getElementById('userAvatar').textContent = userName.charAt(0).toUpperCase();
 
                 // Update profile form
-                this.populateForm('profileForm', this.currentUser.profile);
+                this.populateForm('profileForm', this.currentUser.profile || {});
 
                 // Update media form
-                this.populateForm('mediaForm', this.currentUser.media);
-                this.toggleSocialMediaFields(this.currentUser.media['DO YOU HAVE A SOCIAL MEDIA ACCOUNT AND HAVE MORE THAN 50 FOLLOWERS'] === 'YES');
+                this.populateForm('mediaForm', this.currentUser.media || {});
+                const hasSocialMedia = this.currentUser.media?.['DO YOU HAVE A SOCIAL MEDIA ACCOUNT AND HAVE MORE THAN 50 FOLLOWERS'] === 'YES';
+                this.toggleSocialMediaFields(hasSocialMedia);
 
                 // Update personality info
-                document.getElementById('likeToRepair').textContent = this.currentUser.personality['DO YOU LIKE TO REPAIR'] || '-';
-                document.getElementById('favoriteSubject').textContent = this.currentUser.personality['YOUR FAVORITE SUBJECT'] || '-';
-                document.getElementById('difficultSubject').textContent = this.currentUser.personality['THE SUBJECT YOU FIND MOST DIFFICULT'] || '-';
+                document.getElementById('likeToRepair').textContent = this.currentUser.personality?.['DO YOU LIKE TO REPAIR'] || '-';
+                document.getElementById('favoriteSubject').textContent = this.currentUser.personality?.['YOUR FAVORITE SUBJECT'] || '-';
+                document.getElementById('difficultSubject').textContent = this.currentUser.personality?.['THE SUBJECT YOU FIND MOST DIFFICULT'] || '-';
 
                 // Update additional info
-                document.getElementById('knowUsAs').textContent = this.currentUser.additional['YOU KNOW US AS'] || '-';
-                document.getElementById('currentDate').textContent = this.currentUser.additional['CURRENT DATE'] || '-';
-                document.getElementById('score').textContent = this.currentUser.additional['SCORE'] || '-';
-                document.getElementById('idCardDisplay').textContent = this.currentUser.additional['ID CARD REGISTRATION'] || '-';
-                document.getElementById('kodeUserDisplay').textContent = this.currentUser.additional['KODE USER'] || '-';
-                document.getElementById('membershipAccount').textContent = this.currentUser.additional['MEMBERSHIP ACCOUNT'] || '-';
-                document.getElementById('membershipPassword').textContent = this.currentUser.additional['MEMBERSHIP PASSWORD ACCOUNT'] || '-';
+                document.getElementById('knowUsAs').textContent = this.currentUser.additional?.['YOU KNOW US AS'] || '-';
+                document.getElementById('currentDate').textContent = this.currentUser.additional?.['CURRENT DATE'] || '-';
+                document.getElementById('score').textContent = this.currentUser.additional?.['SCORE'] || '-';
+                document.getElementById('idCardDisplay').textContent = this.currentUser.additional?.['ID CARD REGISTRATION'] || '-';
+                document.getElementById('kodeUserDisplay').textContent = this.currentUser.additional?.['KODE USER'] || '-';
+                document.getElementById('membershipAccount').textContent = this.currentUser.additional?.['MEMBERSHIP ACCOUNT'] || '-';
+                document.getElementById('membershipPassword').textContent = this.currentUser.additional?.['MEMBERSHIP PASSWORD ACCOUNT'] || '-';
 
                 // Update account status
-                this.updateAccountStatus(this.currentUser.additional['STATUS ACCOUNT']);
+                this.updateAccountStatus(this.currentUser.additional?.['STATUS ACCOUNT']);
             }
 
             populateForm(formId, data) {
@@ -1839,8 +1886,11 @@
                     content.classList.remove('active');
                 });
                 
-                document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-                document.getElementById(tabName).classList.add('active');
+                const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
+                const activeContent = document.getElementById(tabName);
+                
+                if (activeTab) activeTab.classList.add('active');
+                if (activeContent) activeContent.classList.add('active');
             }
 
             logout() {
@@ -1856,17 +1906,20 @@
                 const text = document.getElementById(targetId).textContent;
                 navigator.clipboard.writeText(text).then(() => {
                     const element = document.querySelector(`[onclick*="${targetId}"]`);
-                    const btn = element.querySelector('.copy-btn');
-                    const originalHTML = btn.innerHTML;
-                    btn.innerHTML = '<i class="fas fa-check"></i>';
-                    btn.style.background = '#10b981';
-                    
-                    setTimeout(() => {
-                        btn.innerHTML = originalHTML;
-                        btn.style.background = '';
-                    }, 2000);
+                    if (element) {
+                        const btn = element.querySelector('.copy-btn');
+                        const originalHTML = btn.innerHTML;
+                        btn.innerHTML = '<i class="fas fa-check"></i>';
+                        btn.style.background = '#10b981';
+                        
+                        setTimeout(() => {
+                            btn.innerHTML = originalHTML;
+                            btn.style.background = '';
+                        }, 2000);
+                    }
                 }).catch(err => {
                     console.error('Copy failed:', err);
+                    this.showMessage('actionMessage', '❌ Gagal menyalin teks', 'error');
                 });
             }
 
