@@ -69,106 +69,13 @@
             margin: 0 auto 1.5rem;
         }
 
-        .loading-progress {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            overflow: hidden;
-            margin: 1rem 0;
-        }
-
-        .loading-progress-bar {
-            height: 100%;
-            background: white;
-            width: 0%;
-            animation: loading 2s ease-in-out infinite;
-        }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        @keyframes loading {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
-        }
-
         .hidden {
             display: none !important;
-        }
-
-        /* Maintenance Screen */
-        .maintenance-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9998;
-            color: white;
-            padding: 20px;
-        }
-
-        .maintenance-container {
-            background: white;
-            border-radius: 20px;
-            padding: 2.5rem;
-            text-align: center;
-            max-width: 500px;
-            box-shadow: var(--shadow-lg);
-            color: var(--dark);
-        }
-
-        .maintenance-icon {
-            font-size: 4rem;
-            color: var(--warning);
-            margin-bottom: 1.5rem;
-        }
-
-        .operating-hours {
-            background: var(--light);
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin: 1.5rem 0;
-            text-align: left;
-        }
-
-        .operating-hours h3 {
-            color: var(--dark);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .operating-hours ul {
-            list-style: none;
-        }
-
-        .operating-hours li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border);
-            color: var(--gray);
-        }
-
-        .operating-hours li:last-child {
-            border-bottom: none;
-        }
-
-        .countdown {
-            background: var(--primary);
-            color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            font-weight: 600;
-            margin-top: 1rem;
         }
 
         /* Login Screen */
@@ -228,19 +135,6 @@
         .login-subtitle {
             color: var(--gray);
             font-size: 0.9rem;
-        }
-
-        .countdown-banner {
-            background: var(--warning);
-            color: white;
-            padding: 0.75rem 1rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            font-size: 0.875rem;
         }
 
         .login-form {
@@ -924,35 +818,7 @@
             <div class="loading-spinner"></div>
             <h2>SPIMF Professional System</h2>
             <p>Initializing secure connection...</p>
-            <div class="loading-progress">
-                <div class="loading-progress-bar"></div>
-            </div>
             <small>Version 4.0.0 | Secure Session</small>
-        </div>
-    </div>
-
-    <!-- Maintenance Screen -->
-    <div id="maintenance" class="maintenance-screen hidden">
-        <div class="maintenance-container">
-            <div class="maintenance-icon">
-                <i class="fas fa-tools"></i>
-            </div>
-            <h1>Sistem Dalam Waktu Tidak Aktif</h1>
-            <p>Maaf, sistem SPIMF sedang tidak aktif pada waktu ini. Sila kembali pada waktu operasi yang ditetapkan.</p>
-            
-            <div class="operating-hours">
-                <h3><i class="fas fa-clock"></i> Waktu Operasi Sistem:</h3>
-                <ul>
-                    <li>1:00 Pagi Hingga 5:00 Pagi</li>
-                    <li>6:00 Pagi Hingga 11:30 Pagi</li>
-                    <li>12:00 Tengahari Hingga 6:00 Petang</li>
-                    <li>6:30 Petang Hingga 11:59 Malam</li>
-                </ul>
-            </div>
-            
-            <div class="countdown" id="maintenanceCountdown">
-                Sistem akan diaktifkan semula pada: <span id="nextActivationTime">-</span>
-            </div>
         </div>
     </div>
 
@@ -965,11 +831,6 @@
                     <h1>SPIMF PRO</h1>
                 </div>
                 <p class="login-subtitle">Sistem Pengurusan Identiti Membership FareezOnzz</p>
-            </div>
-
-            <div class="countdown-banner" id="loginCountdown">
-                <i class="fas fa-clock"></i>
-                <span>Sistem aktif hingga: <span id="timeToDeactivate">-</span></span>
             </div>
 
             <div class="security-notice">
@@ -1420,7 +1281,7 @@
             constructor() {
                 this.currentUser = null;
                 this.APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzM8WNPhjQ8U2J5mlDl2YErEafX_BTiCAueJJK3gSa5Cy635XrfyITZ1hLuSNIoKStP/exec';
-                this.systemStatus = 'checking';
+                this.systemStatus = 'online'; // Sentiasa online
                 this.init();
             }
 
@@ -1428,85 +1289,28 @@
                 console.log('🚀 SPIMF Professional System Initializing...');
                 this.setupEventListeners();
                 this.showLoadingScreen();
-                this.checkSystemStatus();
+                
+                // Langsung tunjuk login screen tanpa check status
+                setTimeout(() => {
+                    this.hideLoadingScreen();
+                    this.showLoginScreen();
+                    this.updateSystemStatus('online');
+                }, 1500);
             }
 
             showLoadingScreen() {
                 const loadingScreen = document.getElementById('loading');
-                loadingScreen.classList.remove('hidden');
+                if (loadingScreen) loadingScreen.classList.remove('hidden');
             }
 
             hideLoadingScreen() {
-                document.getElementById('loading').classList.add('hidden');
-            }
-
-            async checkSystemStatus() {
-                try {
-                    console.log('🔍 Checking system status...');
-                    const response = await this.callApi('GET', { action: 'systemStatus' });
-                    
-                    if (response.success) {
-                        this.systemStatus = response.operational ? 'online' : 'offline';
-                        
-                        if (response.operational) {
-                            this.updateSystemStatus('online');
-                            this.hideLoadingScreen();
-                            this.showLoginScreen();
-                        } else {
-                            this.showMaintenanceScreen(response);
-                        }
-                    } else {
-                        throw new Error('Status check failed');
-                    }
-                } catch (error) {
-                    console.error('Status check error:', error);
-                    this.systemStatus = 'offline';
-                    this.showMaintenanceScreen({ nextActivation: '6:00 Pagi' });
-                }
-            }
-
-            showMaintenanceScreen(status) {
-                this.hideLoadingScreen();
-                const maintenanceScreen = document.getElementById('maintenance');
-                const nextActivation = document.getElementById('nextActivationTime');
-                
-                if (nextActivation && status.nextActivation) {
-                    nextActivation.textContent = status.nextActivation;
-                }
-                
-                maintenanceScreen.classList.remove('hidden');
+                const loadingScreen = document.getElementById('loading');
+                if (loadingScreen) loadingScreen.classList.add('hidden');
             }
 
             showLoginScreen() {
-                const maintenanceScreen = document.getElementById('maintenance');
                 const loginScreen = document.getElementById('loginScreen');
-                
-                if (maintenanceScreen) maintenanceScreen.classList.add('hidden');
                 if (loginScreen) loginScreen.classList.remove('hidden');
-                
-                // Update countdown banner
-                this.updateLoginCountdown();
-            }
-
-            updateLoginCountdown() {
-                const now = new Date();
-                const currentHour = now.getHours() + (now.getMinutes() / 60);
-                
-                let deactivateTime = '';
-                if (currentHour < 5) {
-                    deactivateTime = '5:00 Pagi';
-                } else if (currentHour < 11.5) {
-                    deactivateTime = '11:30 Pagi';
-                } else if (currentHour < 18) {
-                    deactivateTime = '6:00 Petang';
-                } else {
-                    deactivateTime = '11:59 Malam';
-                }
-                
-                const countdownElement = document.getElementById('timeToDeactivate');
-                if (countdownElement) {
-                    countdownElement.textContent = deactivateTime;
-                }
             }
 
             updateSystemStatus(status) {
