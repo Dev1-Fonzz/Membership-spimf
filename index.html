@@ -527,21 +527,6 @@
             background: var(--light);
         }
 
-        .nav-item .badge {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            background: var(--danger);
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
         /* Main Content */
         .app-main {
             max-width: 1200px;
@@ -999,7 +984,7 @@
                         PHONE NUMBER
                     </label>
                     <input type="text" id="phoneNumber" name="phoneNumber" class="form-input" required 
-                           placeholder="Masukkan nombor telefon (Kolum G)" autocomplete="tel">
+                           placeholder="Masukkan nombor telefon" autocomplete="tel">
                 </div>
 
                 <div class="form-group">
@@ -1008,7 +993,7 @@
                         ID CARD REGISTRATION
                     </label>
                     <input type="text" id="idCard" name="idCard" class="form-input" required 
-                           placeholder="Masukkan ID kad pendaftaran (Kolum AB)" autocomplete="username">
+                           placeholder="Masukkan ID kad pendaftaran" autocomplete="username">
                 </div>
 
                 <div class="form-group">
@@ -1017,7 +1002,7 @@
                         KODE USER
                     </label>
                     <input type="password" id="kodeUser" name="kodeUser" class="form-input" required 
-                           placeholder="Masukkan kode user (Kolum AC)" autocomplete="current-password">
+                           placeholder="Masukkan kode user" autocomplete="current-password">
                 </div>
 
                 <button type="submit" class="login-btn">
@@ -1034,7 +1019,9 @@
             </div>
 
             <div class="login-footer">
-                <p>&copy; Hak cipta SPIMF Online Sistem dipelihara sejak 22 November 2025</p>
+                <p style="text-align: center; color: var(--gray); font-size: 0.875rem; margin-top: 1rem;">
+                    &copy; Hak cipta SPIMF Online Sistem dipelihara sejak 22 November 2025
+                </p>
             </div>
         </div>
     </div>
@@ -1133,6 +1120,7 @@
                             <div class="form-group">
                                 <label for="gender" class="form-label">GENDER / Jantina</label>
                                 <select id="gender" name="GENDER" class="form-input" required>
+                                    <option value="">Pilih jantina</option>
                                     <option value="MALE">MALE / Lelaki</option>
                                     <option value="FEMALE">FEMALE / Perempuan</option>
                                 </select>
@@ -1161,6 +1149,7 @@
                             <div class="form-group">
                                 <label for="leftHanded" class="form-label">ARE YOU LEFT-HANDED "WRITING WITH LEFT HAND" / Adakah anda kidal "menulis dengan tangan kiri"</label>
                                 <select id="leftHanded" name="ARE YOU LEFT-HANDED" class="form-input" required>
+                                    <option value="">Pilih</option>
                                     <option value="YES">YES / Ya</option>
                                     <option value="NO">NO / Tidak</option>
                                 </select>
@@ -1200,6 +1189,7 @@
                     <div class="form-group">
                         <label for="hasSocialMedia" class="form-label">ADA MEDIA SOSIAL DENGAN 50+ FOLLOWERS?</label>
                         <select id="hasSocialMedia" name="DO YOU HAVE A SOCIAL MEDIA ACCOUNT AND HAVE MORE THAN 50 FOLLOWERS" class="form-input" required>
+                            <option value="">Pilih</option>
                             <option value="NO">NO / Tiada</option>
                             <option value="YES">YES / Ada</option>
                         </select>
@@ -1209,22 +1199,22 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="tiktok" class="form-label">TIKTOK</label>
-                                <input type="text" id="tiktok" name="TIKTOK" class="form-input">
+                                <input type="text" id="tiktok" name="TIKTOK" class="form-input" placeholder="@username">
                             </div>
                             
                             <div class="form-group">
                                 <label for="instagram" class="form-label">INSTAGRAM</label>
-                                <input type="text" id="instagram" name="INSTAGRAM" class="form-input">
+                                <input type="text" id="instagram" name="INSTAGRAM" class="form-input" placeholder="@username">
                             </div>
                             
                             <div class="form-group">
                                 <label for="youtube" class="form-label">YOUTUBE</label>
-                                <input type="text" id="youtube" name="YOUTUBE" class="form-input">
+                                <input type="text" id="youtube" name="YOUTUBE" class="form-input" placeholder="Channel name">
                             </div>
                             
                             <div class="form-group">
                                 <label for="twitter" class="form-label">TWITTER</label>
-                                <input type="text" id="twitter" name="TWITTER" class="form-input">
+                                <input type="text" id="twitter" name="TWITTER" class="form-input" placeholder="@username">
                             </div>
                         </div>
                     </div>
@@ -1491,8 +1481,8 @@
                 const maintenanceScreen = document.getElementById('maintenance');
                 const loginScreen = document.getElementById('loginScreen');
                 
-                maintenanceScreen.classList.add('hidden');
-                loginScreen.classList.remove('hidden');
+                if (maintenanceScreen) maintenanceScreen.classList.add('hidden');
+                if (loginScreen) loginScreen.classList.remove('hidden');
                 
                 // Update countdown banner
                 this.updateLoginCountdown();
@@ -1546,7 +1536,14 @@
                     }
 
                     console.log(`🌐 API Call: ${method} ${url}`, data);
+                    
+                    // Add timeout to prevent hanging requests
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000);
+                    options.signal = controller.signal;
+
                     const response = await fetch(url, options);
+                    clearTimeout(timeoutId);
                     
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -1558,16 +1555,22 @@
 
                 } catch (error) {
                     console.error('❌ API Error:', error);
+                    if (error.name === 'AbortError') {
+                        throw new Error('Permintaan timeout. Sila cuba lagi.');
+                    }
                     throw new Error(`Gagal berhubung dengan sistem: ${error.message}`);
                 }
             }
 
             setupEventListeners() {
                 // Login form
-                document.getElementById('loginForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.handleLogin();
-                });
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm) {
+                    loginForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.handleLogin();
+                    });
+                }
 
                 // Navigation tabs
                 document.querySelectorAll('.nav-item').forEach(item => {
@@ -1577,26 +1580,38 @@
                 });
 
                 // Profile form
-                document.getElementById('profileForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.updateProfile();
-                });
+                const profileForm = document.getElementById('profileForm');
+                if (profileForm) {
+                    profileForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.updateProfile();
+                    });
+                }
 
                 // Media form
-                document.getElementById('mediaForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.updateMedia();
-                });
+                const mediaForm = document.getElementById('mediaForm');
+                if (mediaForm) {
+                    mediaForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.updateMedia();
+                    });
+                }
 
                 // Social media toggle
-                document.getElementById('hasSocialMedia').addEventListener('change', (e) => {
-                    this.toggleSocialMediaFields(e.target.value === 'YES');
-                });
+                const hasSocialMedia = document.getElementById('hasSocialMedia');
+                if (hasSocialMedia) {
+                    hasSocialMedia.addEventListener('change', (e) => {
+                        this.toggleSocialMediaFields(e.target.value === 'YES');
+                    });
+                }
 
                 // Logout button
-                document.getElementById('logoutBtn').addEventListener('click', () => {
-                    this.logout();
-                });
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) {
+                    logoutBtn.addEventListener('click', () => {
+                        this.logout();
+                    });
+                }
 
                 // Copy buttons
                 document.querySelectorAll('.copyable').forEach(item => {
@@ -1607,20 +1622,26 @@
                 });
 
                 // Revert data button
-                document.getElementById('revertDataBtn').addEventListener('click', () => {
-                    this.revertData();
-                });
+                const revertBtn = document.getElementById('revertDataBtn');
+                if (revertBtn) {
+                    revertBtn.addEventListener('click', () => {
+                        this.revertData();
+                    });
+                }
 
                 // View logs button
-                document.getElementById('viewLogsBtn').addEventListener('click', () => {
-                    this.viewLogs();
-                });
+                const viewLogsBtn = document.getElementById('viewLogsBtn');
+                if (viewLogsBtn) {
+                    viewLogsBtn.addEventListener('click', () => {
+                        this.viewLogs();
+                    });
+                }
             }
 
             async handleLogin() {
-                const phone = document.getElementById('phoneNumber').value.trim();
-                const idCard = document.getElementById('idCard').value.trim();
-                const kodeUser = document.getElementById('kodeUser').value.trim();
+                const phone = document.getElementById('phoneNumber')?.value.trim();
+                const idCard = document.getElementById('idCard')?.value.trim();
+                const kodeUser = document.getElementById('kodeUser')?.value.trim();
 
                 if (!phone || !idCard || !kodeUser) {
                     this.showMessage('loginMessage', '❌ Sila isi semua medan yang diperlukan', 'error');
@@ -1628,6 +1649,8 @@
                 }
 
                 const btn = document.querySelector('.login-btn');
+                if (!btn) return;
+
                 const originalText = btn.innerHTML;
                 
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengesahkan...';
@@ -1687,6 +1710,8 @@
                 }
 
                 const btn = document.querySelector('#profileForm .btn-primary');
+                if (!btn) return;
+
                 const originalText = btn.innerHTML;
                 
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
@@ -1731,6 +1756,8 @@
                 });
 
                 const btn = document.querySelector('#mediaForm .btn-primary');
+                if (!btn) return;
+
                 const originalText = btn.innerHTML;
                 
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
@@ -1832,6 +1859,8 @@
 
             populateForm(formId, data) {
                 const form = document.getElementById(formId);
+                if (!form) return;
+
                 const inputs = form.querySelectorAll('input, select, textarea');
                 
                 inputs.forEach(input => {
@@ -1844,10 +1873,12 @@
 
             toggleSocialMediaFields(show) {
                 const fields = document.getElementById('socialMediaFields');
-                if (show) {
-                    fields.classList.remove('hidden');
-                } else {
-                    fields.classList.add('hidden');
+                if (fields) {
+                    if (show) {
+                        fields.classList.remove('hidden');
+                    } else {
+                        fields.classList.add('hidden');
+                    }
                 }
             }
 
@@ -1903,19 +1934,24 @@
             }
 
             copyToClipboard(targetId) {
-                const text = document.getElementById(targetId).textContent;
+                const element = document.getElementById(targetId);
+                if (!element) return;
+
+                const text = element.textContent;
                 navigator.clipboard.writeText(text).then(() => {
-                    const element = document.querySelector(`[onclick*="${targetId}"]`);
-                    if (element) {
-                        const btn = element.querySelector('.copy-btn');
-                        const originalHTML = btn.innerHTML;
-                        btn.innerHTML = '<i class="fas fa-check"></i>';
-                        btn.style.background = '#10b981';
-                        
-                        setTimeout(() => {
-                            btn.innerHTML = originalHTML;
-                            btn.style.background = '';
-                        }, 2000);
+                    const copyElement = document.querySelector(`[onclick*="${targetId}"]`);
+                    if (copyElement) {
+                        const btn = copyElement.querySelector('.copy-btn');
+                        if (btn) {
+                            const originalHTML = btn.innerHTML;
+                            btn.innerHTML = '<i class="fas fa-check"></i>';
+                            btn.style.background = '#10b981';
+                            
+                            setTimeout(() => {
+                                btn.innerHTML = originalHTML;
+                                btn.style.background = '';
+                            }, 2000);
+                        }
                     }
                 }).catch(err => {
                     console.error('Copy failed:', err);
